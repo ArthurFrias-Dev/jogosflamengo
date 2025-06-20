@@ -4,43 +4,6 @@ services:
   jogosflamengo:
     build: .
     container_name: jogosflamengo
-    expose:
-      - "5000"
-    environment:
-      - VIRTUAL_HOST=flamengo.loureirofrias.com
-      - LETSENCRYPT_HOST=flamengo.loureirofrias.com
-      - LETSENCRYPT_EMAIL=loureirofrias@gmail.com
-    restart: always
-
-  nginx-proxy:
-    image: jwilder/nginx-proxy
-    container_name: nginx-proxy
     ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - /var/run/docker.sock:/tmp/docker.sock:ro
-      - nginx-certs:/etc/nginx/certs
-      - nginx-vhost:/etc/nginx/vhost.d
-      - nginx-html:/usr/share/nginx/html
+      - "5000:5000"
     restart: always
-
-  letsencrypt-companion:
-    image: jrcs/letsencrypt-nginx-proxy-companion
-    container_name: nginx-letsencrypt
-    environment:
-      - NGINX_PROXY_CONTAINER=nginx-proxy
-      - DEFAULT_EMAIL=loureirofrias@gmail.com
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - nginx-certs:/etc/nginx/certs
-      - nginx-vhost:/etc/nginx/vhost.d
-      - nginx-html:/usr/share/nginx/html
-    depends_on:
-      - nginx-proxy
-    restart: always
-
-volumes:
-  nginx-certs:
-  nginx-vhost:
-  nginx-html:
