@@ -1,9 +1,9 @@
-version: '3.8'
+version: '3'
 
 services:
-  jogosflamengo:
+  flask-jogosflamengo:
     build: .
     container_name: jogosflamengo
     ports:
-      - "5000:5000"
-    restart: unless-stopped
+      - "5000:5000"     # <-- esta linha mapeia a porta!
+    restart: always
