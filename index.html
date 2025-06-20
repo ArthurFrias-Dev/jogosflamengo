@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jogos do Flamengo</title>
+  <link rel="icon" href="https://flamengo.vteximg.com.br/arquivos/faviconERN.ico?v=636264880786300000" type="image/x-icon">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #111;
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      color: #e60000;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    #jogoDoDia {
+      margin-bottom: 20px;
+      font-size: 1.2em;
+      color: #f5f5f5;
+    }
+
+    #erroInternet {
+      display: none;
+      color: #ff6b6b;
+      background-color: #2b0000;
+      border: 1px solid #ff6b6b;
+      padding: 10px 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    table {
+      width: 100%;
+      max-width: 800px;
+      border-collapse: collapse;
+      background-color: #222;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 30px;
+    }
+
+    th, td {
+      padding: 12px 16px;
+      text-align: center;
+      border-bottom: 1px solid #444;
+    }
+
+    th {
+      background-color: #e60000;
+      color: #fff;
+    }
+
+    tr:hover {
+      background-color: #333;
+    }
+
+    footer {
+      margin-top: 20px;
+      font-size: 0.9em;
+      color: #aaa;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
+        width: 100%;
+      }
+
+      thead {
+        display: none;
+      }
+
+      tr {
+        margin-bottom: 15px;
+        border-bottom: 2px solid #e60000;
+        padding: 10px 0;
+      }
+
+      td {
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+      }
+
+      td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 16px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+        color: #ccc;
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Próximos Jogos do Flamengo</h1>
+  <div id="jogoDoDia"></div>
+  <div id="erroInternet">⚠️ Não foi possível carregar os jogos. Verifique sua conexão com a internet.</div>
+
+  <table id="futureGamesTable">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Casa</th>
+        <th>Fora</th>
+        <th>Horário</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <footer>
+    &copy; Feito com carinho por Arthur para Pedro ❤️
+  </footer>
+
+  <script>
+    function createRow(jogo) {
+      const row = document.createElement('tr');
+      const data = new Date(jogo.utcDate);
+      const dataFormatada = data.toLocaleDateString('pt-br');
+      const horario = data.toLocaleTimeString('pt-br', { hour: '2-digit', minute: '2-digit' });
+
+      row.innerHTML = `
+        <td data-label="Data">${dataFormatada}</td>
+        <td data-label="Casa">${jogo.homeTeam.name}</td>
+        <td data-label="Fora">${jogo.awayTeam.name}</td>
+        <td data-label="Horário">${horario}</td>
+      `;
+      return row;
+    }
+
+    fetch('/jogos')
+      .then(res => res.json())
+      .then(data => {
+        const futureTable = document.querySelector('#futureGamesTable tbody');
+        const jogoDoDiaDiv = document.getElementById('jogoDoDia');
+        const now = new Date();
+        let temJogoHoje = false;
+
+        data.forEach(jogo => {
+          const jogoData = new Date(jogo.utcDate);
+
+          if (jogoData >= now) {
+            const row = createRow(jogo);
+            futureTable.appendChild(row);
+          }
+
+          const hoje = new Date();
+          if (
+            jogoData.getDate() === hoje.getDate() &&
+            jogoData.getMonth() === hoje.getMonth() &&
+            jogoData.getFullYear() === hoje.getFullYear()
+          ) {
+            temJogoHoje = true;
+            const hora = jogoData.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            jogoDoDiaDiv.textContent = `Jogo do dia: ${jogo.homeTeam.name} x ${jogo.awayTeam.name} às ${hora}`;
+          }
+        });
+
+        if (!temJogoHoje) {
+          jogoDoDiaDiv.textContent = 'Não há jogo do Flamengo hoje.';
+        }
+      })
+      .catch(err => {
+        console.error('Erro ao carregar os jogos:', err);
+        document.getElementById('erroInternet').style.display = 'block';
+      });
+  </script>
+</body>
+</html>
