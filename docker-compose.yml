@@ -4,6 +4,6 @@ services:
   jogosflamengo:
     build: .
     container_name: jogosflamengo
-    ports:
-      - "5000:5000"
+    expose:
+      - "5000"
     restart: always
