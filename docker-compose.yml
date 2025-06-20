@@ -1,9 +1,25 @@
-version: '3'
+version: '3.7'
 
 services:
-  flask-jogosflamengo:
+  jogosflamengo:
     build: .
     container_name: jogosflamengo
-    ports:
-      - "5000:5000"     # <-- esta linha mapeia a porta!
+    expose:
+      - "5000"
     restart: always
+
+  caddy:
+    image: caddy:latest
+    container_name: caddy-jogosflamengo
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: always
+
+volumes:
+  caddy_data:
+  caddy_config:
