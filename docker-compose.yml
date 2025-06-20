@@ -4,6 +4,6 @@ services:
   jogosflamengo:
     build: .
     container_name: jogosflamengo
-    expose:
-      - "5000"
+    services:
+    network_mode: host
     restart: always
