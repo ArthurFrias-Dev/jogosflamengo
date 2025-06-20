@@ -1,3 +1,0 @@
-flamengo.loureirofrias.com {
-    reverse_proxy jogosflamengo:5000
-}
